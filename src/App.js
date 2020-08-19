@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.css";
 import ProductGrid from "./components/ProductGrid";
+import LoadingSpinner from "./components/LoadingSpinner";
 import Modal from "./components/Modal";
 import AddEditProductForm from "./components/AddEditProductForm";
 import {
@@ -11,23 +12,31 @@ import {
 } from "./ProductsService";
 
 function App() {
-  const [products, setProducts] = React.useState(() => {
-    fetchProducts();
-
-    return [];
-  });
+  
   const [
     isShowingAddEditProductModal,
     setIsShowingAddEditProductModal,
   ] = React.useState(false);
   const [currentProduct, setCurrentProduct] = React.useState(null);
+  const [isLoading, setisLoading] = React.useState(false);
+  const [products, setProducts] = React.useState(() => {
+    fetchProducts();
+
+    return [];
+  });
   function fetchProducts() {
+   
+  setisLoading(true);
+
     getProducts()
       .then((response) => {
         setProducts(response.data);
       })
       .catch((error) => {
         debugger;
+      })
+      .finally(() => {
+setisLoading(false);
       });
   }
 
@@ -90,6 +99,8 @@ function App() {
       ) : null}
 
       <h1>React Grocery App</h1>
+      {isLoading ? <LoadingSpinner /> : null}
+
       <ProductGrid products={products} handleEditProduct={handleEditProduct} />
     </div>
   );
